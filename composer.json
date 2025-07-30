@@ -1,6 +1,6 @@
 {
-  "name": "lambdatt-php/addresses",
-  "description": "A SplitPHP Framework plugin containing an address management system.",
+  "name": "lambdatt-php/sqm",
+  "description": "A SplitPHP Framework plugin containing a service queue management system.",
   "type": "splitphp-module",
   "license": "MIT",
   "autoload": {
