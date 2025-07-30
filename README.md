@@ -1,7 +1,7 @@
 # lambdatt-php/sqm
 
 A SplitPHP Framework plugin containing a Service Queue Manager system.
-
+ 
 ---
 
 ## Installation
