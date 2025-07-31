@@ -1,6 +1,6 @@
 <?php
 
-namespace ServiceQueue\Services;
+namespace Sqm\Services;
 
 use Exception;
 use SplitPHP\Exceptions\BadRequest;
@@ -10,7 +10,7 @@ use SplitPHP\Service;
 
 /**
  * Class Entry
- * @package ServiceQueue\Services
+ * @package Sqm\Services
  *
  * This class handles the creation of service queue entries.
  */

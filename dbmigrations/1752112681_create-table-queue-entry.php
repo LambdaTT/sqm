@@ -1,6 +1,6 @@
 <?php
 
-namespace Servicequeue\Migrations;
+namespace Sqm\Migrations;
 
 use SplitPHP\DbManager\Migration;
 use SplitPHP\Database\DbVocab;

@@ -1,28 +1,29 @@
 <?php
 
-namespace ServiceQueue\Routes;
+namespace Sqm\Routes;
 
 use SplitPHP\Request;
 use SplitPHP\WebService;
+use SplitPHP\Exceptions\Unauthorized;
 
 /**
- * Class ServiceQueue
- * @package ServiceQueue\Routes
+ * Class Sqm
+ * @package Sqm\Routes
  *
  * This class defines the API endpoints for managing the service queue manager system.
  */
-class ServiceQueue extends WebService
+class Sqm extends WebService
 {
   /**
    * Initializes the service queue.
    */
-  public function init(): void
+  public function init()
   {
     $this->setAntiXsrfValidation(false);
 
     $this->addEndpoint('GET', '/v1/current-queue', function (Request $request) {
       $params = $request->getBody();
-      $data = $this->getService('servicequeue/entry')->getQueue($params);
+      $data = $this->getService('sqm/entry')->getQueue($params);
 
       return $this->response
         ->withStatus(200)
@@ -31,7 +32,7 @@ class ServiceQueue extends WebService
 
     $this->addEndpoint('GET', '/v1/entry', function (Request $request) {
       $params = $request->getBody();
-      $data = $this->getService('servicequeue/entry')->list($params);
+      $data = $this->getService('sqm/entry')->list($params);
 
       return $this->response
         ->withStatus(200)
@@ -39,17 +40,13 @@ class ServiceQueue extends WebService
     });
 
     $this->addEndpoint('POST', '/v1/entry', function (Request $request) {
-      // Auth user login:
-      if (!$this->getService('iam/session')->authenticate()) return $this->response->withStatus(401);
-
-      // Validate user permissions:
-      $this->getService('iam/permission')->validatePermissions([
+      $this->auth([
         'SQM_ENTRY' => 'C'
       ]);
 
       $clientName = $request->getBody()['clientName'] ?? null;
 
-      $result = $this->getService('servicequeue/entry')->create($clientName);
+      $result = $this->getService('sqm/entry')->create($clientName);
 
       return $this->response
         ->withStatus(201)
@@ -57,18 +54,14 @@ class ServiceQueue extends WebService
     });
 
     $this->addEndpoint('PUT', '/v1/change-status/?entryKey?/?status?', function (Request $request) {
-      // Auth user login:
-      if (!$this->getService('iam/session')->authenticate()) return $this->response->withStatus(401);
-
-      // Validate user permissions:
-      $this->getService('iam/permission')->validatePermissions([
+      $this->auth([
         'SQM_ENTRY' => 'U'
       ]);
 
       $params = $request->getRoute()->params;
       $body = $request->getBody();
 
-      $rows = $this->getService('servicequeue/entry')->changeStatus(
+      $rows = $this->getService('sqm/entry')->changeStatus(
         params: ['ds_key' => $params['entryKey']],
         status: $params['status'],
         location: $body['location'] ?? null
@@ -78,5 +71,18 @@ class ServiceQueue extends WebService
 
       return $this->response->withStatus(204);
     });
+  }
+
+  private function auth(array $permissions)
+  {
+    if (!$this->getService('modcontrol/control')->moduleExists('iam')) return;
+
+    // Auth user login:
+    if (!$this->getService('iam/session')->authenticate())
+      throw new Unauthorized("Não autorizado.");
+
+    // Validate user permissions:
+    $this->getService('iam/permission')
+      ->validatePermissions($permissions);
   }
 }
