@@ -1,0 +1,26 @@
+🧩 LambdaTT SQM - Release Notes
+---
+
+📦 Version: 0.1.2
+📅 Release Date: 2026-11-17
+📄 License: MIT
+👤 Authors:
+  - Gabriel Valentoni Guelfi (https://github.com/gabriel-guelfi)
+
+---
+
+💬 Commentaries:
+
+Hotfix aligning this module with the IAM permissions-domain simplification (IAM v1.3.0).
+
+---
+
+🔧 Fixed:
+
+    ▸ Disabled the entity/CRUD `iam/permission->validatePermissions()` call in the route auth
+      guard (commented out, kept as reference with a TODO). It referenced a method removed in the
+      IAM refactor and would otherwise throw an "undefined method" fatal on every guarded endpoint.
+      Authorization currently falls back to authentication only; reintroduce a tag-based
+      `canExecute()` check in a follow-up.
+
+---
