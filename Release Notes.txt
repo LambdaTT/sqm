@@ -21,6 +21,6 @@ Hotfix aligning this module with the IAM permissions-domain simplification (IAM 
       guard (commented out, kept as reference with a TODO). It referenced a method removed in the
       IAM refactor and would otherwise throw an "undefined method" fatal on every guarded endpoint.
       Authorization currently falls back to authentication only; reintroduce a tag-based
-      `canExecute()` check in a follow-up.
+      `requireAny()` check in a follow-up.
 
 ---

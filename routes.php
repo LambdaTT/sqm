@@ -83,7 +83,7 @@ class Sqm extends WebService
 
     // Validate user permissions:
     // TODO(iam-refactor): entity/CRUD validatePermissions() was removed in the IAM
-    // permissions simplification. Re-enable via tag-based canExecute() once tags exist.
+    // permissions simplification. Re-enable via tag-based requireAny() once tags exist.
     // $this->getService('iam/permission')
     //   ->validatePermissions($permissions);
   }
