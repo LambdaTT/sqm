@@ -5,6 +5,7 @@ namespace Sqm\Routes;
 use SplitPHP\Request;
 use SplitPHP\WebService;
 use SplitPHP\Exceptions\Unauthorized;
+use SplitPHP\ModsManager;
 
 /**
  * Class Sqm
@@ -14,6 +15,11 @@ use SplitPHP\Exceptions\Unauthorized;
  */
 class Sqm extends WebService
 {
+  private const ENTRY_PERMISSIONS = [
+    'read'    => 'sqm.entry.read',
+    'manage'  => 'sqm.entry.manage'
+  ];
+
   /**
    * Initializes the service queue.
    */
@@ -40,9 +46,7 @@ class Sqm extends WebService
     });
 
     $this->addEndpoint('POST', '/v1/entry', function (Request $request) {
-      $this->auth([
-        'SQM_ENTRY' => 'C'
-      ]);
+      $this->auth(self::ENTRY_PERMISSIONS['manage']);
 
       $clientName = $request->getBody()['clientName'] ?? null;
 
@@ -54,9 +58,7 @@ class Sqm extends WebService
     });
 
     $this->addEndpoint('PUT', '/v1/change-status/?entryKey?/?status?', function (Request $request) {
-      $this->auth([
-        'SQM_ENTRY' => 'U'
-      ]);
+      $this->auth(self::ENTRY_PERMISSIONS['manage']);
 
       $params = $request->getRoute()->params;
       $body = $request->getBody();
@@ -73,18 +75,15 @@ class Sqm extends WebService
     });
   }
 
-  private function auth(array $permissions)
+  private function auth(array|string $permissions)
   {
-    if (!$this->getService('modcontrol/control')->moduleExists('iam')) return;
+    if (!ModsManager::modExists('iam')) return;
 
     // Auth user login:
     if (!$this->getService('iam/session')->authenticate())
       throw new Unauthorized("Não autorizado.");
 
     // Validate user permissions:
-    // TODO(iam-refactor): entity/CRUD validatePermissions() was removed in the IAM
-    // permissions simplification. Re-enable via tag-based requireAny() once tags exist.
-    // $this->getService('iam/permission')
-    //   ->validatePermissions($permissions);
+    $this->getService('iam/permission')->requireAny($permissions);
   }
 }
