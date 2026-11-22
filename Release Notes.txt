@@ -1,8 +1,8 @@
 🧩 LambdaTT SQM - Release Notes
 ---
 
-📦 Version: 0.1.2
-📅 Release Date: 2026-11-17
+📦 Version: 0.1.3
+📅 Release Date: 2026-11-22
 📄 License: MIT
 👤 Authors:
   - Gabriel Valentoni Guelfi (https://github.com/gabriel-guelfi)
@@ -11,16 +11,26 @@
 
 💬 Commentaries:
 
-Hotfix aligning this module with the IAM permissions-domain simplification (IAM v1.3.0).
+Completes the IAM permissions-domain alignment (IAM v1.3.0): re-enables permission enforcement
+using the new tag-based permissioning standard.
 
 ---
 
-🔧 Fixed:
+✨ Added:
 
-    ▸ Disabled the entity/CRUD `iam/permission->validatePermissions()` call in the route auth
-      guard (commented out, kept as reference with a TODO). It referenced a method removed in the
-      IAM refactor and would otherwise throw an "undefined method" fatal on every guarded endpoint.
-      Authorization currently falls back to authentication only; reintroduce a tag-based
-      `requireAny()` check in a follow-up.
+    ▸ Seed `dbseeds/1795316500_sqm-permissions.php`, registering the module's permission tags in
+      `IAM_PERMISSION`: `sqm.entry.read` and `sqm.entry.manage`.
+
+---
+
+🔧 Changed:
+
+    ▸ Replaced the entity/CRUD permission codes (`SQM_ENTRY` C/U) with tag-based permissions
+      enforced via `iam/permission->requireAny()`. Creating an entry and changing its status now
+      require `sqm.entry.manage`. The current-queue and entry listing endpoints remain public, as
+      before.
+
+    ▸ Module presence is now checked via `ModsManager::modExists('iam')`, and the disabled
+      `validatePermissions()` reference was removed.
 
 ---
